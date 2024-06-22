@@ -41,6 +41,7 @@ public enum GameState
     None,
     FillingDots,
     CheckKingDots,
+    Ability,
     Attacking,
     Finish,
     Swipe
