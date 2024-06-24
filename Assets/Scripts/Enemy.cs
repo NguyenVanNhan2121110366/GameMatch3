@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class Enemy : Character
 {
+    private static Enemy _instance;
+    public static Enemy instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindFirstObjectByType<Enemy>();
+            }
+            return _instance;
+        }
+    }
     [SerializeField] private Vector2 posEnemy;
     [SerializeField] private Transform posAttackPlayer;
     [SerializeField] private Quaternion roEnemy;

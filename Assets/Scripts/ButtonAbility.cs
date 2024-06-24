@@ -14,12 +14,12 @@ public class ButtonAbility : MonoBehaviour
         this.exitAbility.onClick.AddListener(this.ExitAbility);
     }
 
-    private void OnClickAbility()
+    public void OnClickAbility()
     {
         this.bgrAbility.SetActive(true);
     }
 
-    private void ExitAbility()
+    public void ExitAbility()
     {
         this.bgrAbility.SetActive(false);
     }

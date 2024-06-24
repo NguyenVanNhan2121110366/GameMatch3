@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Ability : MonoBehaviour
 {
-    protected Button ability;
+    protected Button BntAbility;
     protected int isConsumpMana;
 
     protected Player Player;
@@ -14,7 +14,8 @@ public class Ability : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        this.Player = FindFirstObjectByType<Player>();
+        this.BntAbility = GetComponent<Button>();
+
         this.Enemy = FindFirstObjectByType<Enemy>();
     }
 
@@ -32,19 +33,30 @@ public class Ability : MonoBehaviour
     protected virtual bool CheckConditionUseAbility()
     {
         if (TurnController.instance.currentTurn == GameTurn.Player)
-            if (this.Player.PowerCurrentScore >= this.isConsumpMana)
+        {
+            if (Player.instance.PowerCurrentScore >= this.isConsumpMana)
                 return true;
-        if (TurnController.instance.currentTurn == GameTurn.Enemy)
-            if (this.Enemy.PowerCurrentScore >= this.isConsumpMana)
-                return true;
+        }
+
+        // if (TurnController.instance.currentTurn == GameTurn.Enemy)
+        // {
+        //     if (this.Enemy == null)
+        //     {
+        //         this.Enemy = FindFirstObjectByType<Enemy>();
+        //     }
+        //     if (this.Enemy.PowerCurrentScore >= this.isConsumpMana)
+        //         return true;
+        // }
+
         return false;
     }
 
     protected virtual void UpdateMana()
     {
         if (TurnController.instance.currentTurn == GameTurn.Player)
-            this.Player.PowerCurrentScore -= this.isConsumpMana;
+            Player.instance.PowerCurrentScore -= this.isConsumpMana;
         if (TurnController.instance.currentTurn == GameTurn.Enemy)
-            this.Enemy.PowerCurrentScore -= this.isConsumpMana;
+            //this.Enemy.PowerCurrentScore -= this.isConsumpMana;
+            Debug.Log("Enemy dame");
     }
 }

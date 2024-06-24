@@ -7,8 +7,10 @@ public class FireBall : MonoBehaviour
     private GameObject _enemyObj;
     private Animator _animator;
     private Enemy _enemy;
-    private bool isAttackEnemy;
+    private bool _isAttackEnemy;
     [SerializeField] private int isDamage;
+
+    public bool isAttackEnemy { get => _isAttackEnemy; set => _isAttackEnemy = value; }
 
     private void Awake()
     {
@@ -18,7 +20,7 @@ public class FireBall : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        this.isAttackEnemy = false;
+        //this._isAttackEnemy = false;
     }
 
     // Update is called once per frame
@@ -37,26 +39,36 @@ public class FireBall : MonoBehaviour
             this._enemyObj = GameObject.Find("Skeleton");
             transform.rotation = this.GetValueRotationtoEnemy(this._enemy.transform.position);
         }
-        else if (Vector2.Distance(transform.position, this._enemy.transform.position) < 0.1)
+        if (Vector2.Distance(transform.position, this._enemy.transform.position) < 1)
         {
-            Destroy(gameObject, 3f);
+            Destroy(gameObject, 0.3f);
             this._animator.SetTrigger("Exploi");
-            if (this.isAttackEnemy)
+            if (this._isAttackEnemy)
             {
                 this._enemy.animator.SetTrigger("TakeDame");
-                this._enemy.BloodCurrentScore -= this.isDamage;
-                this.isAttackEnemy = false;
+                this.TakeDameEnemy();
+                // this._enemy.BloodCurrentScore -= this.isDamage;
+                this._isAttackEnemy = false;
+                Debug.Log("Attack enemy");
             }
         }
         else
-            transform.position = Vector2.MoveTowards(transform.position, this._enemy.transform.position, 8 * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, this._enemy.transform.position, 3 * Time.deltaTime);
     }
 
     private Quaternion GetValueRotationtoEnemy(Vector3 target)
     {
         var postiontarget = target - transform.position;
         var angle = Mathf.Atan2(postiontarget.y, postiontarget.x) * Mathf.Rad2Deg;
-        var ro = Quaternion.Euler(0, angle, 0);
+        var ro = Quaternion.Euler(0, 0, angle);
         return ro;
+    }
+
+    private void TakeDameEnemy()
+    {
+        if (Enemy.instance.BloodCurrentScore >= this.isDamage)
+        {
+            Enemy.instance.BloodCurrentScore -= this.isDamage;
+        }
     }
 }

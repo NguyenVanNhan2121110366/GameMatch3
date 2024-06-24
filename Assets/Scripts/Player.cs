@@ -4,6 +4,18 @@ using UnityEngine;
 
 public class Player : Character
 {
+    private static Player _instance;
+    public static Player instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindFirstObjectByType<Player>();
+            }
+            return _instance;
+        }
+    }
     #region Variable 
     [SerializeField] private bool isIdle;
     [SerializeField] private bool isAttack;
