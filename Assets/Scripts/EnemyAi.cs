@@ -22,7 +22,7 @@ public class EnemyAi : MonoBehaviour
 
     private void Update()
     {
-        if (TurnController.instance.currentTurn == GameTurn.Enemy && this.isFind1)
+        if (TurnController.Instance.currentTurn == GameTurn.Enemy && this.isFind1)
         {
             this.allMoves.Clear();
             GetAllDots();
@@ -81,7 +81,6 @@ public class EnemyAi : MonoBehaviour
 
                 if (isOriginMatched || isTargetMatched)
                 {
-                    Debug.Log("Up " + i + " , " + j);
                     MoveDot newMove = new MoveDot(i, j, i, j + 1);
                     this.allMoves.Add(newMove);
                 }
@@ -103,7 +102,6 @@ public class EnemyAi : MonoBehaviour
 
                 if (isOriginMatched || isTargetMatched)
                 {
-                    Debug.Log("Right " + i + " , " + j);
                     MoveDot newMove = new MoveDot(i, j, i + 1, j);
                     this.allMoves.Add(newMove);
                 }

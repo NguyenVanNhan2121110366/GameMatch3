@@ -6,7 +6,7 @@ public class ScoreController : MonoBehaviour
 {
 
     private static ScoreController _instance;
-    public static ScoreController instance
+    public static ScoreController Instance
     {
         get
         {
@@ -40,7 +40,7 @@ public class ScoreController : MonoBehaviour
 
     public void UpdateScore()
     {
-        if (TurnController.instance.currentTurn == GameTurn.Player)
+        if (TurnController.Instance.currentTurn == GameTurn.Player)
         {
             this._player.UpdateScore();
             this._player.UpdateScoreBar();
@@ -50,7 +50,7 @@ public class ScoreController : MonoBehaviour
                 GameStateController.Instance.CurrentGameState = GameState.Attacking;
             }
         }
-        if (TurnController.instance.currentTurn == GameTurn.Enemy)
+        if (TurnController.Instance.currentTurn == GameTurn.Enemy)
         {
             this._enemy.UpdateScore();
             this._enemy.UpdateScoreBar();

@@ -9,9 +9,11 @@ public class AllDotController : MonoBehaviour
     [SerializeField] private int height;
     [SerializeField] private Transform objPrefab;
     [SerializeField] private GameObject girdPrefab;
+    [SerializeField] private bool isCheckGameOver;
     private GameObject[,] allDots;
     private GameObject[,] allGrids;
     public GameObject[] dots = new GameObject[9];
+    public DotInteraction _dotInteraction;
     [SerializeField] private GameObject[] allEffectsDestroyObj;
     #endregion
 
@@ -20,17 +22,21 @@ public class AllDotController : MonoBehaviour
     public int Height { get => height; set => height = value; }
     public GameObject[,] AllDots { get => allDots; set => allDots = value; }
     public GameObject[,] AllGrids { get => allGrids; set => allGrids = value; }
+    public bool IsCheckGameOver { get => isCheckGameOver; set => isCheckGameOver = value; }
     #endregion
+
+    private void Awake()
+    {
+
+    }
     // Start is called before the first frame update
     void Start()
     {
+        this.isCheckGameOver = false;
         this.allDots = new GameObject[this.width, this.height];
         this.allGrids = new GameObject[this.width, this.height];
         this.AddAllDotsToList();
-        // if (TurnController.instance.CheckAtTime == false)
-        // {
-        //     StartCoroutine(CreateBoard());
-        // }
+
 
     }
 
@@ -100,26 +106,31 @@ public class AllDotController : MonoBehaviour
     {
         if (this.AllDots[col, ro].GetComponent<DotInteraction>().IsMatched)
         {
+            AudioManager.Instance.AudioSrc.PlayOneShot(AudioManager.Instance.DestroyEffect, 0.1f);
             Destroy(this.AllDots[col, ro]);
             this.AllDots[col, ro] = null;
+
         }
     }
 
     public IEnumerator DestroyMatched()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         for (var i = 0; i < this.Width; i++)
             for (var j = 0; j < this.Height; j++)
             {
                 if (this.AllDots[i, j] != null)
+                {
                     this.DestroyMatchedAt(i, j);
+
+                }
             }
         StartCoroutine(this.ColumnFallBellow());
     }
 
-    private IEnumerator ColumnFallBellow()
+    public IEnumerator ColumnFallBellow()
     {
-        yield return new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.3f);
         var indexRow = 0;
         for (var i = 0; i < this.Width; i++)
         {
@@ -185,18 +196,17 @@ public class AllDotController : MonoBehaviour
         if (MatchedOnBoard())
         {
             StartCoroutine(this.DestroyMatched());
-            Debug.Log("Combo++");
         }
         else
         {
             if (GameStateController.Instance.CurrentGameState == GameState.None)
             {
                 GameStateController.Instance.CurrentGameState = GameState.Swipe;
-                TurnController.instance.currentTurn = GameTurn.Player;
+                TurnController.Instance.currentTurn = GameTurn.Player;
             }
             if (GameStateController.Instance.CurrentGameState == GameState.FillingDots)
             {
-                ScoreController.instance.UpdateScore();
+                ScoreController.Instance.UpdateScore();
                 if (GameStateController.Instance.CurrentGameState == GameState.FillingDots)
                 {
                     GameStateController.Instance.CurrentGameState = GameState.Finish;
@@ -210,8 +220,6 @@ public class AllDotController : MonoBehaviour
 
     public void SpawnDestroyVFX(Dot dot)
     {
-        //var nameTag = gameObject.tag;
-        Debug.Log("Spawn Effects");
         var effectDot = Instantiate(this.allEffectsDestroyObj[GetEffects(dot.gameObject)], dot.transform.position, Quaternion.identity);
         Destroy(effectDot, 2f);
     }

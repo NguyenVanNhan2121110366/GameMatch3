@@ -14,7 +14,7 @@ public class Ability : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        this.BntAbility = GetComponent<Button>();
+        //this.BntAbility = GetComponent<Button>();
 
         this.Enemy = FindFirstObjectByType<Enemy>();
     }
@@ -32,9 +32,9 @@ public class Ability : MonoBehaviour
 
     protected virtual bool CheckConditionUseAbility()
     {
-        if (TurnController.instance.currentTurn == GameTurn.Player)
+        if (TurnController.Instance.currentTurn == GameTurn.Player)
         {
-            if (Player.instance.PowerCurrentScore >= this.isConsumpMana)
+            if (Player.Instance.PowerCurrentScore >= this.isConsumpMana)
                 return true;
         }
 
@@ -53,9 +53,9 @@ public class Ability : MonoBehaviour
 
     protected virtual void UpdateMana()
     {
-        if (TurnController.instance.currentTurn == GameTurn.Player)
-            Player.instance.PowerCurrentScore -= this.isConsumpMana;
-        if (TurnController.instance.currentTurn == GameTurn.Enemy)
+        if (TurnController.Instance.currentTurn == GameTurn.Player)
+            Player.Instance.PowerCurrentScore -= this.isConsumpMana;
+        if (TurnController.Instance.currentTurn == GameTurn.Enemy)
             //this.Enemy.PowerCurrentScore -= this.isConsumpMana;
             Debug.Log("Enemy dame");
     }

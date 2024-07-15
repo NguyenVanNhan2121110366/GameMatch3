@@ -5,6 +5,18 @@ using UnityEngine;
 
 public class DotInteraction : MonoBehaviour
 {
+    private static DotInteraction _instance;
+    public static DotInteraction instance
+    {
+        get
+        {
+            if (_instance == null)
+            {
+                _instance = FindFirstObjectByType<DotInteraction>();
+            }
+            return _instance;
+        }
+    }
     #region Variable
     [SerializeField] private int column;
     [SerializeField] private int row;
@@ -13,7 +25,9 @@ public class DotInteraction : MonoBehaviour
     [SerializeField] private bool isMatched;
     [SerializeField] private int preCol, preRow;
     [SerializeField] private int targetX, targetY;
-    [SerializeField] private GameObject currentDot;
+    //[SerializeField] private GameObject currentDot;
+    //[SerializeField] bool _isStatic;
+
     private AllDotController _alldots;
     #endregion
 
@@ -21,26 +35,33 @@ public class DotInteraction : MonoBehaviour
     public int Column { get => column; set => column = value; }
     public int Row { get => row; set => row = value; }
     public bool IsMatched { get => isMatched; set => isMatched = value; }
+    //public bool checkStatic { get => _isStatic; set => _isStatic = value; }
     #endregion
     // Start is called before the first frame update
     void Start()
     {
         this._alldots = FindFirstObjectByType<AllDotController>();
         this.isMatched = false;
+
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        this.currentDot = _alldots.AllDots[column, row];
-        if (!Input.GetMouseButton(0) && GameStateController.Instance.CurrentGameState == GameState.Swipe)
-            transform.localScale = Vector3.one;
+        //IsCheckStatic();
         this.targetX = column;
         this.targetY = row;
+        //this.currentDot = _alldots.AllDots[column, row];
+        if (!Input.GetMouseButton(0) && GameStateController.Instance.CurrentGameState == GameState.Swipe)
+            transform.localScale = Vector3.one;
         this.FindMatched();
         this.MoveDot();
-
+        //if (IsStatic())
+        //StartCoroutine(this.CheckCoutTurn());
+        //Debug.Log(_isStatic);
     }
+
 
     private void MoveDot()
     {
@@ -95,7 +116,6 @@ public class DotInteraction : MonoBehaviour
             {
                 GameStateController.Instance.CurrentGameState = GameState.FillingDots;
                 StartCoroutine(this._alldots.DestroyMatched());
-                Debug.Log("Destroy");
             }
             targetDot = null;
         }
@@ -133,50 +153,53 @@ public class DotInteraction : MonoBehaviour
                 }
             }
         }
-        this.Find5Matched();
+        this.Find5Matched(gameObject);
     }
 
-    private void Find5Matched()
+    private void Find5Matched(GameObject dots)
     {
+        //if (!isCheckCoutTurn)
+
+        //Check Left Right
+        //var leftleftDot = column - 2 >= 0 ? this._alldots.AllDots[this.column - 2, this.row] : null;
+        //var rightrightDot = column + 2 < this._alldots.Width ? this._alldots.AllDots[this.column + 2, this.row] : null;
         if (this.column - 2 >= 0 && this.column + 2 < this._alldots.Width)
         {
             var leftDot = this._alldots.AllDots[this.column - 1, this.row];
             var rightDot = this._alldots.AllDots[this.column + 1, this.row];
             var leftleftDot = this._alldots.AllDots[this.column - 2, this.row];
             var rightrightDot = this._alldots.AllDots[this.column + 2, this.row];
-
-            if (leftDot && rightDot && leftDot.tag == rightDot.tag && rightDot.tag == this.gameObject.tag && leftDot != gameObject && rightDot != gameObject)
+            if (leftDot && rightDot && leftDot.tag == rightDot.tag && rightDot.tag == dots.tag && leftDot != dots && rightDot != dots)
             {
-                if (leftleftDot && rightrightDot && leftleftDot.tag == rightrightDot.tag && leftleftDot.tag == this.gameObject.tag)
+                if (leftleftDot && leftleftDot.tag == dots.tag || rightrightDot && rightrightDot.tag == dots.tag)
                 {
-                    var count = 0;
-                    count++;
-                    Debug.Log("5 Matched " + count);
+                    //StartCoroutine(DelayCoutTurn());
                 }
             }
         }
 
-        if (row - 2 >= 0 && this.row + 2 < this._alldots.Height)
-        {
-            var upDot = this._alldots.AllDots[this.column, row + 1];
-            var downDot = this._alldots.AllDots[this.column, row - 1];
-            var upupDot = this._alldots.AllDots[this.column, row + 2];
-            var downdownDot = this._alldots.AllDots[this.column, this.row - 2];
+        //Check Up Down
+        // if (row - 2 >= 0 && this.row + 2 < this._alldots.Height)
+        // {
+        //     var upDot = this._alldots.AllDots[this.column, row + 1];
+        //     var downDot = this._alldots.AllDots[this.column, row - 1];
+        //     var upupDot = this._alldots.AllDots[this.column, row + 2];
+        //     var downdownDot = this._alldots.AllDots[this.column, this.row - 2];
 
-            if (upDot && downDot && upDot.tag == downDot.tag && downDot.tag == this.gameObject.tag && upDot != gameObject && downDot != gameObject)
-            {
-                if (upupDot && downdownDot && upupDot.tag == downdownDot.tag && downdownDot.tag == this.gameObject.tag)
-                {
-                    var count = 0;
-                    count++;
-                    Debug.Log("5 Matched " + count);
-                }
-            }
-        }
+        //     if (upDot && downDot && upDot.tag == downDot.tag && downDot.tag == this.gameObject.tag && upDot != gameObject && downDot != gameObject)
+        //     {
+        //         if (upupDot && downdownDot && upupDot.tag == downdownDot.tag && downdownDot.tag == this.gameObject.tag)
+        //         {
+        //             //this.isCheckCoutTurn = true;
+        //             CheckCoutTurn();
+        //         }
+        //     }
+        // }
     }
+    
+
+    
     #endregion
-
-
 
     #region Input
     private string GetValueSwipe()
@@ -214,7 +237,6 @@ public class DotInteraction : MonoBehaviour
             this.targetDot.GetComponent<DotInteraction>().Column += 1;
             column -= 1;
             GameStateController.Instance.CurrentGameState = GameState.CheckKingDots;
-            Debug.Log("Left");
         }
         else if (inputSwipe == "right" && column + 1 < this._alldots.Width)
         {
@@ -223,7 +245,6 @@ public class DotInteraction : MonoBehaviour
             this.targetDot.GetComponent<DotInteraction>().Column -= 1;
             column += 1;
             GameStateController.Instance.CurrentGameState = GameState.CheckKingDots;
-            Debug.Log("Right");
         }
         else if (inputSwipe == "up" && row + 1 < this._alldots.Height)
         {
@@ -232,7 +253,6 @@ public class DotInteraction : MonoBehaviour
             this.targetDot.GetComponent<DotInteraction>().Row -= 1;
             row += 1;
             GameStateController.Instance.CurrentGameState = GameState.CheckKingDots;
-            Debug.Log("Up");
         }
         else if (inputSwipe == "dow" && row - 1 >= 0)
         {
@@ -241,7 +261,6 @@ public class DotInteraction : MonoBehaviour
             this.targetDot.GetComponent<DotInteraction>().Row += 1;
             row -= 1;
             GameStateController.Instance.CurrentGameState = GameState.CheckKingDots;
-            Debug.Log("Down");
         }
         StartCoroutine(this.CheckMatched());
     }
@@ -249,27 +268,6 @@ public class DotInteraction : MonoBehaviour
     {
         preCol = column;
         preRow = row;
-    }
-    private string Test()
-    {
-        var inputMouse = "invalid";
-        if (Vector2.Distance(mouseUp, mouseDow) < 1f)
-        {
-            Debug.Log(inputMouse);
-            return inputMouse;
-        }
-        float angle = Mathf.Atan2(mouseUp.x - mouseDow.x, mouseUp.y - mouseDow.y) * 180 / Mathf.PI;
-        Debug.Log(angle);
-        if (angle >= -100 && angle <= -60)
-            inputMouse = "left";
-        else if (angle <= 100 && angle >= 60)
-            inputMouse = "right";
-        else if (angle > -60 && angle < 60)
-            inputMouse = "up";
-        else if (angle < -100 || angle > 100)
-            inputMouse = "dow";
-
-        return inputMouse;
     }
     private Vector2 InputSwipe()
     {
@@ -279,14 +277,14 @@ public class DotInteraction : MonoBehaviour
 
     private void OnMouseDown()
     {
-        if (GameStateController.Instance.CurrentGameState != GameState.Swipe && TurnController.instance.currentTurn != GameTurn.Player)
+        if (GameStateController.Instance.CurrentGameState != GameState.Swipe || TurnController.Instance.currentTurn != GameTurn.Player)
             return;
         this.mouseDow = InputSwipe();
     }
 
     private void OnMouseUp()
     {
-        if (GameStateController.Instance.CurrentGameState != GameState.Swipe && TurnController.instance.currentTurn != GameTurn.Player)
+        if (GameStateController.Instance.CurrentGameState != GameState.Swipe || TurnController.Instance.currentTurn != GameTurn.Player)
             return;
         GameStateController.Instance.CurrentGameState = GameState.CheckKingDots;
         this.mouseUp = InputSwipe();
@@ -301,7 +299,7 @@ public class DotInteraction : MonoBehaviour
     // }
     private void OnMouseEnter()
     {
-        if (GameStateController.Instance.CurrentGameState != GameState.Swipe && TurnController.instance.currentTurn != GameTurn.Player)
+        if (GameStateController.Instance.CurrentGameState != GameState.Swipe && TurnController.Instance.currentTurn != GameTurn.Player)
             return;
         transform.localScale = Vector3.one * 1.2f;
     }

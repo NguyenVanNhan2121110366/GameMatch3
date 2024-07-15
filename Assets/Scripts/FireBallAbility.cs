@@ -34,8 +34,11 @@ public class FireBallAbility : Ability
     {
         if (this.CheckConditionUseAbility())
         {
-            this.SpawnFireball();
+            this.UpdateMana();
             base.ExcutedAbility();
+            this.SpawnFireballAttackEnemy();
+            Invoke(nameof(this.SpawnFireballAttackDot), 0.6f);
+
             this.bntAbility.ExitAbility();
 
         }
@@ -43,14 +46,26 @@ public class FireBallAbility : Ability
     }
 
 
-    private void SpawnFireball()
+    private void SpawnFireballAttackEnemy()
     {
-        if (TurnController.instance.currentTurn == GameTurn.Player)
+        if (TurnController.Instance.currentTurn == GameTurn.Player)
         {
             var fireball = Instantiate(this.objFireball);
             fireball.transform.position = this.posSpawnFireBallOfPlayer.position;
             fireball.SetActive(true);
-            fireball.GetComponent<FireBall>().isAttackEnemy = true;
+            fireball.GetComponent<FireBall>().IsAttackEnemy = true;
+            fireball.GetComponent<FireBall>().IsAttackDot = false;
+        }
+    }
+
+    private void SpawnFireballAttackDot()
+    {
+        if (TurnController.Instance.currentTurn == GameTurn.Player)
+        {
+            var objFireball = Instantiate(this.objFireball);
+            objFireball.transform.position = this.posSpawnFireBallOfPlayer.position;
+            objFireball.SetActive(true);
+            objFireball.GetComponent<FireBall>().IsAttackDot = true;
         }
     }
 }

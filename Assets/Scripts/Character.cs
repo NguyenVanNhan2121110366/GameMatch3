@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class Character : MonoBehaviour
 {
     #region Variable
+    protected AllDotController Alldot;
     [SerializeField] private int countTurn;
     public Animator animator;
     [SerializeField] private int bloodScore;
@@ -40,7 +41,6 @@ public class Character : MonoBehaviour
     public int CountTurn { get => this.countTurn; set => countTurn = value; }
 
     #endregion
-
     protected virtual void UpdateFillBar()
     {
         this.bloodBar.fillAmount = Mathf.Lerp(this.bloodBar.fillAmount, this.bloodCurrentScore / this.maxScoreBlood, 15 * Time.deltaTime);
@@ -65,10 +65,10 @@ public class Character : MonoBehaviour
 
     public void UpdateScore()
     {
-        this.bloodScore = ScoreController.instance.BloodScore;
-        this.attackScore = ScoreController.instance.AttackScore;
-        this.powerScore = ScoreController.instance.PowerScore;
-        this.shieldScore = ScoreController.instance.ShieldScore;
+        this.bloodScore = ScoreController.Instance.BloodScore;
+        this.attackScore = ScoreController.Instance.AttackScore;
+        this.powerScore = ScoreController.Instance.PowerScore;
+        this.shieldScore = ScoreController.Instance.ShieldScore;
     }
 
     public virtual void Attacking()

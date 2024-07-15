@@ -29,10 +29,9 @@ public class GameStateController : MonoBehaviour
     {
         if (currentGameState == GameState.Finish)
         {
-            Debug.Log("Vao Day");
             currentGameState = GameState.Swipe;
-            ScoreController.instance.ResetScore();
-            TurnController.instance.CheckSwitchTurn();
+            ScoreController.Instance.ResetScore();
+            StartCoroutine(TurnController.Instance.CheckSwitchTurn());
         }
     }
 }

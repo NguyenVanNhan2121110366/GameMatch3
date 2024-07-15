@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Player : Character
 {
     private static Player _instance;
-    public static Player instance
+    public static Player Instance
     {
         get
         {
@@ -25,6 +26,8 @@ public class Player : Character
     [SerializeField] private Vector2 posPlayer;
     [SerializeField] private Quaternion roPlayer;
     [SerializeField] private GameObject attackRate;
+
+    private bool _isCheckAudio;
     private Enemy _enemy;
     #endregion
     #region Public
@@ -35,11 +38,13 @@ public class Player : Character
     {
         this.animator = GetComponent<Animator>();
         this._enemy = FindFirstObjectByType<Enemy>();
+        this.Alldot = FindFirstObjectByType<AllDotController>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
+        this._isCheckAudio = false;
         this.CountTurn = 1;
         this.posPlayer = transform.position;
         this.roPlayer = transform.rotation;
@@ -63,31 +68,32 @@ public class Player : Character
     public override void Attacking()
     {
         base.Attacking();
-        if (TurnController.instance.currentTurn == GameTurn.Player && GameStateController.Instance.CurrentGameState == GameState.Attacking)
+        if (TurnController.Instance.currentTurn == GameTurn.Player && GameStateController.Instance.CurrentGameState == GameState.Attacking)
         {
             this.isIdle = false;
             if (this.isWalking && !this.isAttack && !this.isBackToBase)
             {
-                transform.position = Vector2.Lerp(transform.position, this.posAttackEnemy.position, 3 * Time.fixedDeltaTime);
+                transform.position = Vector2.Lerp(transform.position, this.posAttackEnemy.position, 15 * Time.fixedDeltaTime);
                 if (Vector2.Distance(transform.position, this.posAttackEnemy.position) <= 0.2f)
                 {
                     transform.position = this.posAttackEnemy.position;
-                    Debug.Log("Walking");
                     this.isWalking = false;
                     this.isAttack = true;
+                    this._isCheckAudio = true;
                 }
             }
             else if (this.isAttack && !this.isWalking && !this.isBackToBase)
             {
-                Debug.Log("Attacking");
                 this.attackRate.SetActive(true);
+
                 StartCoroutine(this.DelayAttack());
+                this.CheckAudio();
 
             }
             else if (this.isBackToBase && !this.isAttack && !this.isWalking)
             {
                 transform.rotation = Quaternion.Euler(0, 180, 0);
-                transform.position = Vector2.Lerp(transform.position, this.posPlayer, 3 * Time.fixedDeltaTime);
+                transform.position = Vector2.Lerp(transform.position, this.posPlayer, 15 * Time.fixedDeltaTime);
                 if (Vector2.Distance(transform.position, this.posPlayer) < 0.1f)
                 {
                     this.isBackToBase = false;
@@ -108,10 +114,20 @@ public class Player : Character
         this.animator.SetBool("IsBackToBase", this.isBackToBase);
         this.animator.SetBool("Attacking", this.isAttack);
     }
+    private void CheckAudio()
+    {
+        if (_isCheckAudio)
+        {
+            AudioManager.Instance.AudioSrc.PlayOneShot(AudioManager.Instance.AttackEffect, 0.3f);
+            _isCheckAudio = false;
+        }
+
+    }
 
     private IEnumerator DelayAttack()
     {
         yield return new WaitForSeconds(1f);
+
         this.isAttack = false;
         this.isBackToBase = true;
         this.attackRate.SetActive(false);
@@ -125,9 +141,11 @@ public class Player : Character
             this.BloodCurrentScore -= this._enemy.AttackScore;
             if (this.BloodCurrentScore <= 0)
             {
-                Debug.Log("Player Die");
+                TurnController.Instance.gameOverObj.SetActive(true);
+                TurnController.Instance.gameOver.text = "Player die :(";
                 this.animator.SetTrigger("Die");
-                TurnController.instance.currentTurn = GameTurn.None;
+                this.Alldot.IsCheckGameOver = true;
+                //TurnController.instance.currentTurn = GameTurn.None;
             }
         }
     }

@@ -6,20 +6,9 @@ using UnityEngine.UI;
 
 public class TurnController : MonoBehaviour
 {
-    private AllDotController _allDot;
-    [SerializeField] private GameObject dotSprite;
-    [SerializeField] private TextMeshProUGUI textTurn;
-    [SerializeField] private TextMeshProUGUI textTurnOf;
-    [SerializeField] private TextMeshProUGUI textStart;
-    [SerializeField] private GameObject objStart;
-    [SerializeField] private GameObject objCountEffect;
-    [SerializeField] private TextMeshProUGUI textCountEffect;
-    [SerializeField] private GameObject objPlayerFirst;
-    [SerializeField] private TMP_Text txtPlayerFirst;
-    [SerializeField] private int addTime;
-    private bool _checkAttime;
+
     private static TurnController _instance;
-    public static TurnController instance
+    public static TurnController Instance
     {
         get
         {
@@ -31,12 +20,30 @@ public class TurnController : MonoBehaviour
         }
     }
 
+    private AllDotController _allDot;
+    [SerializeField] private GameObject dotSprite;
+    [SerializeField] private TextMeshProUGUI textTurn;
+    [SerializeField] private TextMeshProUGUI textTurnOf;
+    [SerializeField] private TextMeshProUGUI textStart;
+    [SerializeField] private GameObject objStart;
+    [SerializeField] private GameObject objCountEffect;
+    [SerializeField] private TextMeshProUGUI textCountEffect;
+    [SerializeField] private GameObject objPlayerFirst;
+    [SerializeField] private TMP_Text txtPlayerFirst;
+    [SerializeField] private int addTime;
+    public GameObject menu;
+    public GameObject gameOverObj;
+    public TMP_Text gameOver;
+    private bool _checkAttime;
+
+
     [SerializeField] private GameTurn _currentTurn;
     [SerializeField] private int countTurn;
     private Player _player;
     private Enemy _enemy;
     public GameTurn currentTurn { get => _currentTurn; set => _currentTurn = value; }
     public bool CheckAtTime { get => _checkAttime; set => _checkAttime = value; }
+    public int CountTurn { get => countTurn; set => countTurn = value; }
     private void Awake()
     {
         this._allDot = FindFirstObjectByType<AllDotController>();
@@ -47,6 +54,7 @@ public class TurnController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        this.menu.SetActive(false);
         this.addTime = 0;
         this.CheckAtTime = true;
         this._currentTurn = GameTurn.None;
@@ -59,12 +67,10 @@ public class TurnController : MonoBehaviour
     private void Update()
     {
         this.textTurn.text = this.currentTurn.ToString() + " Turn";
-
     }
 
     private IEnumerator SettingStartGame()
     {
-
         while (this._checkAttime)
         {
             this.objCountEffect.SetActive(true);
@@ -88,10 +94,6 @@ public class TurnController : MonoBehaviour
             }
 
         }
-
-
-
-        Debug.Log("Start");
         yield return new WaitForSeconds(1f);
     }
 
@@ -101,27 +103,6 @@ public class TurnController : MonoBehaviour
         this.textCountEffect.text = addTime.ToString();
     }
 
-    // private IEnumerator CheckTurnText()
-    // {
-
-    //     if (this._player.CountTurn <= 0 || this._enemy.CountTurn <= 0)
-    //     {
-    //         if (this.currentTurn == GameTurn.Player)
-    //             Debug.Log("Turn of Enemy");
-    //         else
-    //             Debug.Log("Turn of player");
-    //     }
-    //     else
-    //     {
-    //         if (this.currentTurn == GameTurn.Player)
-    //             Debug.Log("Còn " + this._player.CountTurn.ToString() + " lượt");
-    //         else
-    //             Debug.Log("Còn " + this._enemy.CountTurn.ToString() + " lượt");
-    //         //Debug.Log("Còn " + this.countTurn.ToString() + " lượt");
-    //     }
-    //     yield return new WaitForSeconds(1f);
-    // }
-
     private IEnumerator CheckTurnText()
     {
         this.dotSprite.SetActive(true);
@@ -130,13 +111,10 @@ public class TurnController : MonoBehaviour
             if (this.currentTurn == GameTurn.Player)
             {
                 this.textTurnOf.text = "Lượt của Enemy";
-                Debug.Log("Turn of Enemy");
             }
-
-            else
+            else if (this.currentTurn == GameTurn.Enemy)
             {
                 this.textTurnOf.text = "Lượt của Player";
-                Debug.Log("Turn of player");
             }
         }
         else
@@ -149,45 +127,30 @@ public class TurnController : MonoBehaviour
     }
 
 
-    // public void CheckSwitchTurn()
-    // {
-    //     if (currentTurn == GameTurn.Player)
-    //     {
-    //         this._player.CountTurn--;
-    //         if (this._player.CountTurn <= 0)
-    //         {
-    //             StartCoroutine(CheckTurnText());
-    //             this._enemy.CountTurn = 1;
-    //             currentTurn = GameTurn.Enemy;
-    //             this.SetNewTurn();
-    //         }
-    //     }
-    //     else if (currentTurn == GameTurn.Enemy)
-    //     {
-    //         this._enemy.CountTurn--;
-    //         if (this._enemy.CountTurn <= 0)
-    //         {
-    //             StartCoroutine(CheckTurnText());
-    //             this._player.CountTurn = 1;
-    //             currentTurn = GameTurn.Player;
-    //         }
-    //     }
-    // }
-
-    public void CheckSwitchTurn()
+    public IEnumerator CheckSwitchTurn()
     {
-        this.countTurn--;
-        if (countTurn <= 0)
+        if (!this._allDot.IsCheckGameOver)
         {
-            StartCoroutine(this.CheckTurnText());
-            this.countTurn = 1;
-            this.SwitchTurn();
-            this.SetNewTurn();
+            this.countTurn--;
+            if (countTurn <= 0)
+            {
+                StartCoroutine(this.CheckTurnText());
+                this.countTurn = 1;
+                this.SwitchTurn();
+                this.SetNewTurn();
+            }
+            else
+            {
+                StartCoroutine(this.CheckTurnText());
+                this.SetNewTurn();
+            }
         }
         else
         {
-            StartCoroutine(this.CheckTurnText());
-            this.SetNewTurn();
+            yield return new WaitForSeconds(0.3f);
+            this.gameOverObj.SetActive(false);
+            yield return null;
+            this.menu.SetActive(true);
         }
     }
 
@@ -211,6 +174,10 @@ public class TurnController : MonoBehaviour
         else
             currentTurn = GameTurn.Player;
 
+    }
+    public IEnumerator DisplayGetTurn()
+    {
+        yield return new WaitForSeconds(1f);
     }
 }
 public enum GameTurn

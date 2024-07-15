@@ -8,11 +8,13 @@ public class Dot : MonoBehaviour
     [SerializeField] private string dotName;
     [SerializeField] private string dotType;
     [SerializeField] private int score;
+    ScoreController scoreController;
     private AllDotController _alldots;
     private void Awake()
     {
         if (this._alldots == null)
             this._alldots = FindFirstObjectByType<AllDotController>();
+        this.scoreController = FindFirstObjectByType<ScoreController>();
     }
     // Start is called before the first frame update
     void Start()
@@ -28,47 +30,27 @@ public class Dot : MonoBehaviour
         {
 
             this.DestroyBig();
-            Debug.Log("Destroy Big");
         }
-        this._alldots.SpawnDestroyVFX(this);
+        
+        // if (_alldots != null)
+        // {
+        //     this._alldots.SpawnDestroyVFX(this);
+        // }
+        //this._alldots.SpawnDestroyVFX(this);
     }
 
     private void UpdateScore()
     {
-        // var namedot = gameObject.tag;
-        // switch (namedot)
-        // {
-        //     case "Gold":
-        //         ScoreController.instance.GoldScore += score;
-        //         break;
-        //     case "Heart":
-        //         ScoreController.instance.BloodScore += score;
-        //         break;
-        //     case "Sword":
-        //         ScoreController.instance.AttackScore += score;
-        //         break;
-        //     case "Shield":
-        //         ScoreController.instance.ShieldScore += score;
-        //         break;
-        //     case "Mana":
-        //         ScoreController.instance.PowerScore += score;
-        //         break;
-        //     default:
-        //         Debug.Log("Null");
-        //         break;
-        // }
         if (dotName == "Gold")
-            ScoreController.instance.GoldScore += score;
+            this.scoreController.GoldScore += score;
         if (dotName == "Heart")
-            ScoreController.instance.BloodScore += score;
+            this.scoreController.BloodScore += score;
         if (dotName == "Sword")
-            ScoreController.instance.AttackScore += score;
+            this.scoreController.AttackScore += score;
         if (dotName == "Shield")
-            ScoreController.instance.ShieldScore += score;
+            this.scoreController.ShieldScore += score;
         if (dotName == "Mana")
-            ScoreController.instance.PowerScore += score;
-
-
+            this.scoreController.PowerScore += score;
     }
 
     private void DestroyBig()

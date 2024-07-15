@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : Character
 {
     private static Enemy _instance;
-    public static Enemy instance
+    public static Enemy Instance
     {
         get
         {
@@ -16,6 +17,7 @@ public class Enemy : Character
             return _instance;
         }
     }
+    
     [SerializeField] private Vector2 posEnemy;
     [SerializeField] private Transform posAttackPlayer;
     [SerializeField] private Quaternion roEnemy;
@@ -24,17 +26,22 @@ public class Enemy : Character
     [SerializeField] private bool isBackToBase;
     [SerializeField] private bool isAttack;
     [SerializeField] private GameObject attackRate;
+    
+    private bool _isCheckAudio;
     public Player player;
     public bool IsWaking { get => isWaking; set => isWaking = value; }
+    
 
     private void Awake()
     {
         this.player = FindFirstObjectByType<Player>();
         this.animator = GetComponent<Animator>();
+        this.Alldot = FindFirstObjectByType<AllDotController>();
     }
     // Start is called before the first frame update
     void Start()
     {
+        _isCheckAudio = false;
         this.CountTurn = 0;
         this.posEnemy = transform.position;
         this.roEnemy = transform.rotation;
@@ -63,23 +70,24 @@ public class Enemy : Character
             this.isIdle = false;
             if (this.isWaking)
             {
-                transform.position = Vector2.Lerp(transform.position, this.posAttackPlayer.position, 5 * Time.fixedDeltaTime);
+                transform.position = Vector2.Lerp(transform.position, this.posAttackPlayer.position, 15 * Time.fixedDeltaTime);
                 if (Vector2.Distance(transform.position, this.posAttackPlayer.position) < 0.1f)
                 {
                     transform.position = this.posAttackPlayer.position;
                     this.isAttack = true;
                     this.isWaking = false;
+                    _isCheckAudio = true;
                 }
             }
             if (this.isAttack)
             {
 
                 StartCoroutine(this.DelayAttack());
+                this.CheckAudio();
             }
             if (this.isBackToBase)
             {
-                Debug.Log("Back To Base");
-                transform.position = Vector2.Lerp(transform.position, this.posEnemy, 5 * Time.fixedDeltaTime);
+                transform.position = Vector2.Lerp(transform.position, this.posEnemy, 15 * Time.fixedDeltaTime);
                 transform.rotation = Quaternion.Euler(0, 180, 0);
                 if (Vector2.Distance(transform.position, this.posEnemy) < 0.1f)
                 {
@@ -98,6 +106,15 @@ public class Enemy : Character
         this.animator.SetBool("Waking", this.isWaking);
         this.animator.SetBool("Attacking", this.isAttack);
         this.animator.SetBool("BackToBase", this.isBackToBase);
+    }
+    private void CheckAudio()
+    {
+        if (_isCheckAudio)
+        {
+            AudioManager.Instance.AudioSrc.PlayOneShot(AudioManager.Instance.AttackEffect, 0.3f);
+            _isCheckAudio = false;
+        }
+
     }
 
     private IEnumerator DelayAttack()
@@ -126,9 +143,12 @@ public class Enemy : Character
             this.animator.SetTrigger("TakeDame");
             if (this.BloodCurrentScore <= 0)
             {
+                TurnController.Instance.gameOverObj.SetActive(true);
+                TurnController.Instance.gameOver.text = "Enemy die ";
                 this.animator.SetTrigger("Die");
-                Debug.Log("Enemy Die");
-                TurnController.instance.currentTurn = GameTurn.None;
+                this.Alldot.IsCheckGameOver = true;
+
+                //TurnController.instance.currentTurn = GameTurn.None;
             }
             //StartCoroutine(this.DelayTime());
         }
