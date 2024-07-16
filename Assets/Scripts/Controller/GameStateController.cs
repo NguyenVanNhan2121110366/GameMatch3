@@ -17,6 +17,7 @@ public class GameStateController : MonoBehaviour
         }
     }
     [SerializeField] private GameState currentGameState;
+    
     public GameState CurrentGameState { get => currentGameState; set => currentGameState = value; }
     // Start is called before the first frame update
     void Start()
