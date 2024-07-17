@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class ButtonAbility : MonoBehaviour
 {
+    private SaveAllData _saveAll;
     [SerializeField] private Button bntAbility;
     [SerializeField] private GameObject bgrAbility;
     [SerializeField] private Button exitAbility;
@@ -14,16 +15,21 @@ public class ButtonAbility : MonoBehaviour
     [SerializeField] private Button bntRestart;
     [SerializeField] private Button bntExitGame;
     [SerializeField] private Button setting;
+    [SerializeField] private Button bntSave;
+    [SerializeField] private Button bntLoad;
     private bool _isCheckMenu;
 
     private void Awake()
     {
+        this._saveAll = FindFirstObjectByType<SaveAllData>();
         this.bntAbility.onClick.AddListener(this.OnClickAbility);
         this.exitAbility.onClick.AddListener(this.ExitAbility);
         this.bntHome.onClick.AddListener(this.ClickHome);
         this.bntRestart.onClick.AddListener(this.ClickRestart);
         this.bntExitGame.onClick.AddListener(this.ClickExit);
-        this.setting.onClick.AddListener(this.Setting);
+        this.setting.onClick.AddListener(Setting);
+        this.bntSave.onClick.AddListener(this.ClickSaveGame);
+        this.bntLoad.onClick.AddListener(this.ClickLoadGame);
     }
     private void Start()
     {
@@ -41,6 +47,7 @@ public class ButtonAbility : MonoBehaviour
     }
     private void ClickHome()
     {
+        Time.timeScale = 1;
         SceneManager.LoadScene("Menu");
     }
     private void ClickRestart()
@@ -55,9 +62,15 @@ public class ButtonAbility : MonoBehaviour
 
     private void Setting()
     {
+        StartCoroutine(SettingCoroutine());
+    }
+
+    private IEnumerator SettingCoroutine()
+    {
         if (this._isCheckMenu)
         {
             TurnController.Instance.menu.SetActive(true);
+            yield return new WaitForSeconds(1f);
             Time.timeScale = 0;
             this._isCheckMenu = false;
         }
@@ -67,6 +80,18 @@ public class ButtonAbility : MonoBehaviour
             TurnController.Instance.menu.SetActive(false);
             this._isCheckMenu = true;
         }
+    }
+
+    private void ClickSaveGame()
+    {
+        this._saveAll.SaveDataGame();
+    }
+
+    private void ClickLoadGame()
+    {
+        Time.timeScale = 1;
+        TurnController.Instance.menu.SetActive(false);
+        this._saveAll.LoadAllData();
     }
 
 }

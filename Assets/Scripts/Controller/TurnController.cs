@@ -154,13 +154,6 @@ public class TurnController : MonoBehaviour
         }
     }
 
-
-    private IEnumerator DelayCountTurn()
-    {
-        yield return new WaitForSeconds(0.5f);
-        this.countTurn = 1;
-    }
-
     private void SetNewTurn()
     {
         //this.dotSprite.SetActive(false);
