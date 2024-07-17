@@ -58,10 +58,12 @@ public class ButtonAbility : MonoBehaviour
         if (this._isCheckMenu)
         {
             TurnController.Instance.menu.SetActive(true);
+            Time.timeScale = 0;
             this._isCheckMenu = false;
         }
         else
         {
+            Time.timeScale = 1;
             TurnController.Instance.menu.SetActive(false);
             this._isCheckMenu = true;
         }
