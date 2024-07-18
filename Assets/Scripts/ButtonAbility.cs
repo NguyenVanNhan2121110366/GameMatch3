@@ -52,8 +52,8 @@ public class ButtonAbility : MonoBehaviour
     }
     private void ClickRestart()
     {
+        Time.timeScale=1;
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-
     }
     private void ClickExit()
     {
