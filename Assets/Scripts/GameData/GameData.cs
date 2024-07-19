@@ -5,13 +5,14 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 [Serializable]
-public class SaveData 
+public class SaveData
 {
     public bool[] isCheckMenu = new bool[6];
     public float[] healPlayer = new float[6];
     public float[] healEnemy = new float[6];
     public float[] manaPlayer = new float[6];
     public float[] manaEnemy = new float[6];
+    public GameObject[,] dots = new GameObject[9, 9];
 }
 public class GameData : MonoBehaviour
 {
@@ -30,7 +31,7 @@ public class GameData : MonoBehaviour
     public SaveData saveData;
     private void Awake()
     {
-        
+
     }
 
     public void Save()
